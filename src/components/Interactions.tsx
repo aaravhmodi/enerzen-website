@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
 import { Architecture, Assembly } from "./Architecture";
 import { Arrow, Brand } from "./Primitives";
 
@@ -13,7 +13,7 @@ export function Navigation() {
     document.addEventListener("keydown", close);
     return () => document.removeEventListener("keydown", close);
   }, [open]);
-  return <header className="site-header"><div className="header-inner container"><Brand /><nav className={`main-nav ${open ? "is-open" : ""}`} id="main-navigation" aria-label="Main navigation"><a href="#approach" onClick={() => setOpen(false)}>Our approach</a><a href="#homes" onClick={() => setOpen(false)}>Our homes</a><a href="#about" onClick={() => setOpen(false)}>About us</a><a href="#contact" className="mobile-contact" onClick={() => setOpen(false)}>Let’s talk <Arrow direction="diagonal" /></a></nav><a className="header-cta" href="#contact">Let’s talk <Arrow direction="diagonal" /></a><button ref={toggle} className="menu-toggle" aria-controls="main-navigation" aria-expanded={open} aria-label={open ? "Close menu" : "Open menu"} onClick={() => setOpen(!open)}><span/><span/></button></div></header>;
+  return <header className="site-header"><div className="header-inner container"><Brand /><nav className={`main-nav ${open ? "is-open" : ""}`} id="main-navigation" aria-label="Main navigation"><a href="#approach" onClick={() => setOpen(false)}>Our approach</a><a href="#engine" onClick={() => setOpen(false)}>The engine</a><a href="#homes" onClick={() => setOpen(false)}>Our homes</a><a href="#about" onClick={() => setOpen(false)}>About us</a><a href="#contact" className="mobile-contact" onClick={() => setOpen(false)}>Let’s talk <Arrow direction="diagonal" /></a></nav><a className="header-cta" href="#contact">Let’s talk <Arrow direction="diagonal" /></a><button ref={toggle} className="menu-toggle" aria-controls="main-navigation" aria-expanded={open} aria-label={open ? "Close menu" : "Open menu"} onClick={() => setOpen(!open)}><span/><span/></button></div></header>;
 }
 
 const systems = [
@@ -25,6 +25,46 @@ const systems = [
 export function SystemExplorer() {
   const [active, setActive] = useState(0);
   return <div className="system-explorer"><div className="system-list">{systems.map((item, i) => <div className={`system-item ${active === i ? "is-active" : ""}`} key={item.title}><h3><button id={`system-button-${i}`} aria-expanded={active === i} aria-controls={`system-panel-${i}`} onClick={() => setActive(i)}><span className="system-number">0{i + 1}</span><span>{item.title}</span><span className="expand-mark" aria-hidden="true">{active === i ? "−" : "+"}</span></button></h3><div id={`system-panel-${i}`} role="region" aria-labelledby={`system-button-${i}`} hidden={active !== i}><p>{item.text}</p></div></div>)}</div><figure className="system-figure"><div className="art-topline"><span>INTELLIGENCE IN EVERY LAYER</span><span>02 — THE SYSTEM</span></div><Assembly active={active}/><figcaption><span className="system-caption-label">{systems[active].label}</span><span>Illustrative assembly · not a technical specification</span></figcaption></figure></div>;
+}
+
+const priorities = [
+  { name: "A balanced home", weights: [1, 1, 1, 1], note: "No single measure wins. The engine finds the home that gives away the least on any of them." },
+  { name: "Lowest cost", weights: [6, 1, 1, 1], note: "The most attainable route to the target, without spending where it won’t be felt." },
+  { name: "Fastest build", weights: [1, 6, 1, 1], note: "Assemblies that leave the factory sooner and close up faster on site." },
+  { name: "Lowest carbon", weights: [1, 1, 6, 1], note: "Materials chosen for the lightest footprint, before the home is ever occupied." },
+  { name: "Lowest energy", weights: [1, 1, 1, 6], note: "A deeper envelope that asks the least of the grid, year after year." },
+];
+
+const metrics = [
+  { label: "Build cost", unit: "vs. code-built", format: (value: number) => { const percent = Math.round(value * 16 - 3); return `${percent < 0 ? "−" : "+"}${Math.abs(percent)}%`; } },
+  { label: "Weathertight in", unit: "weeks", format: (value: number) => (3.5 + value * 5).toFixed(1) },
+  { label: "Embodied carbon", unit: "kgCO₂e/m²", format: (value: number) => `${Math.round(80 + value * 100)}` },
+  { label: "Energy use", unit: "kWh/m² a year", format: (value: number) => `${Math.round(68 + value * 64)}` },
+];
+
+// Illustrative options for the demonstration chart, seeded so server and client agree.
+// Each is [cost, build time, embodied carbon, energy use] from 0 to 1, lower being better.
+const candidates = (() => {
+  let seed = 580;
+  const random = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  return Array.from({ length: 150 }, () => {
+    const cost = random();
+    return [cost, 0.08 + 0.84 * random(), 0.08 + 0.84 * random(), (0.05 + 0.9 * (1 - cost) ** 3 + 0.3 * random() ** 1.6) / 1.25];
+  });
+})();
+const chartX = (candidate: number[]) => Math.round(560 + candidate[0] * 4200) / 10;
+const chartY = (candidate: number[]) => Math.round(3100 - candidate[3] * 2900) / 10;
+
+export function EngineExplorer() {
+  const [active, setActive] = useState(0);
+  const ranked = useMemo(() => {
+    const weights = priorities[active].weights;
+    return candidates.map((candidate, i) => ({ i, score: candidate.reduce((sum, value, m) => sum + value * weights[m], 0) })).sort((a, b) => a.score - b.score).map(item => item.i);
+  }, [active]);
+  const best = candidates[ranked[0]];
+  const shortlist = new Set(ranked.slice(1, 7));
+  const x = chartX(best), y = chartY(best);
+  return <div className="engine-explorer"><div className="engine-controls"><h3>What matters most to you?</h3><p>Choose a priority and watch the engine re-rank every option.</p><fieldset className="engine-priorities"><legend className="sr-only">Priority</legend>{priorities.map((item, i) => <label key={item.name}><input type="radio" name="engine-priority" checked={active === i} onChange={() => setActive(i)}/><span>{item.name}</span></label>)}</fieldset><div className="engine-readout" aria-live="polite"><p className="engine-note">{priorities[active].note}</p><dl className="engine-metrics">{metrics.map((metric, m) => { const ahead = Math.round(100 * candidates.filter(candidate => candidate[m] > best[m]).length / (candidates.length - 1)); return <div key={metric.label}><dt>{metric.label}</dt><dd><span className="engine-value">{metric.format(best[m])}<small>{metric.unit}</small></span><span className="engine-meter" aria-hidden="true"><i style={{ width: `${ahead}%` }}/></span><span className="engine-rank">Ahead of {ahead}% of options</span></dd></div>; })}</dl></div><a className="text-link" href="#contact">See what it finds for your site <Arrow /></a></div><figure className="engine-figure"><div className="art-topline"><span>EVERY POINT IS ONE WAY TO BUILD THE SAME HOME</span><span>03 — THE ENGINE</span></div><svg className="engine-chart" viewBox="0 0 520 348" fill="none" role="img" aria-label={`Illustrative chart of ${candidates.length} ways to build the same home, plotted by upfront cost and energy use, with the best fit for ${priorities[active].name.toLowerCase()} highlighted`}><g className="engine-grid">{[0, 1, 2, 3, 4].map(n => <path key={n} d={`M56 ${20 + n * 72.5}h420M${56 + n * 105} 20v290`}/>)}</g>{candidates.map((candidate, i) => <circle key={i} className={`engine-dot ${shortlist.has(i) ? "is-shortlist" : ""}`} cx={chartX(candidate)} cy={chartY(candidate)} r={shortlist.has(i) ? 4 : 3}/>)}<path className="engine-guide" d="M56 0h420" style={{ transform: `translateY(${y}px)` }}/><path className="engine-guide" d="M0 20v290" style={{ transform: `translateX(${x}px)` }}/><g className="engine-marker" style={{ transform: `translate(${x}px, ${y}px)` }}><circle className="engine-pulse" r="16"/><circle r="10"/><circle r="5"/></g><text x="476" y="334" textAnchor="end">UPFRONT COST →</text><text transform="translate(36 20) rotate(-90)" textAnchor="end">ENERGY USE →</text></svg><figcaption><span className="engine-legend"><span><i className="is-best"/>Best fit</span><span><i className="is-shortlist"/>Shortlist</span><span><i/>Considered</span></span><span>Illustrative demonstration · not project results</span></figcaption></figure></div>;
 }
 
 const homes = [
