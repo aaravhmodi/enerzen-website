@@ -65,6 +65,9 @@ h2 + p, .eyebrow + h2 { margin-top: 1.25rem; }
 .arrow { flex: none; transition: translate 0.35s var(--ease); }
 .button { display: inline-flex; align-items: center; justify-content: center; gap: 0.65rem; min-height: 3.25rem; padding: 0.85rem 1.5rem; border-radius: 999px; font-size: 0.96rem; font-weight: 500; letter-spacing: -0.005em; line-height: 1.2; transition: background-color 0.3s var(--ease), color 0.3s var(--ease), box-shadow 0.3s var(--ease), translate 0.3s var(--ease); }
 .button:focus-visible, .header-cta:focus-visible, .home-tabs button:focus-visible { border-radius: 999px; }
+.button { position: relative; overflow: hidden; }
+.button::after { content: ""; position: absolute; inset: 0; background: linear-gradient(105deg, transparent 35%, rgb(255 255 255 / 0.22) 50%, transparent 65%); translate: -110% 0; pointer-events: none; }
+.button:hover::after { translate: 110% 0; transition: translate 0.8s var(--ease); }
 .button.primary { background: var(--ink); color: var(--paper); box-shadow: 0 10px 24px -12px rgb(42 35 49 / 0.55); }
 .button.primary:hover { background: var(--accent-deep); translate: 0 -1px; }
 .button.light { background: var(--paper); color: var(--ink); }
@@ -159,8 +162,8 @@ h2 + p, .eyebrow + h2 { margin-top: 1.25rem; }
 .system-item button { display: grid; grid-template-columns: 2.25rem 1fr auto; align-items: center; gap: 1rem; width: 100%; padding-block: 1.5rem; color: var(--ink-soft); font-size: clamp(1.15rem, 1.7vw, 1.4rem); font-weight: 500; letter-spacing: -0.022em; line-height: 1.2; text-align: left; transition: color 0.3s var(--ease); }
 .system-item button:hover, .system-item.is-active button { color: var(--ink); }
 .system-number { color: var(--accent-text); font-size: 0.75rem; letter-spacing: 0.14em; }
-.expand-mark { display: grid; place-items: center; width: 2rem; height: 2rem; border: 1px solid var(--line-strong); border-radius: 50%; font-size: 1.05rem; font-weight: 400; line-height: 1; transition: background-color 0.3s var(--ease), border-color 0.3s var(--ease), color 0.3s var(--ease); }
-.system-item.is-active .expand-mark { border-color: var(--ink); background: var(--ink); color: var(--paper); }
+.expand-mark { display: grid; place-items: center; width: 2rem; height: 2rem; border: 1px solid var(--line-strong); border-radius: 50%; font-size: 1.05rem; font-weight: 400; line-height: 1; transition: background-color 0.3s var(--ease), border-color 0.3s var(--ease), color 0.3s var(--ease), rotate 0.5s var(--ease); }
+.system-item.is-active .expand-mark { border-color: var(--ink); background: var(--ink); color: var(--paper); rotate: 180deg; }
 .system-item [role="region"] { animation: fade-up 0.5s var(--ease) both; }
 .system-item [role="region"] p { max-width: 32rem; padding: 0 3rem 1.75rem 3.25rem; color: var(--ink-soft); }
 .system-figure { view-timeline: --assembly; }
@@ -191,6 +194,7 @@ h2 + p, .eyebrow + h2 { margin-top: 1.25rem; }
 .engine-priorities input:checked + span { border-color: #f4f0f8; background: #f4f0f8; color: var(--ink); }
 .engine-priorities input:focus-visible + span { outline: 2px solid #c9bdd8; outline-offset: 3px; }
 .engine-readout { align-self: stretch; margin-block: 1.75rem 2rem; padding-top: 1.5rem; border-top: 1px solid rgb(255 255 255 / 0.1); }
+.engine-note { animation: fade-up 0.5s var(--ease) both; }
 .engine-note { min-height: 3.1em; color: #cfc6da; font-size: 0.96rem; line-height: 1.55; }
 .engine-metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; margin-top: 1.25rem; }
 .engine-metrics dt { color: #a99db7; font-size: 0.68rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; }
@@ -301,6 +305,10 @@ h2 + p, .eyebrow + h2 { margin-top: 1.25rem; }
 .people-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; }
 .person { padding: 1.75rem; border: 1px solid var(--line); border-radius: var(--radius); background: rgb(255 255 255 / 0.7); transition: border-color 0.4s var(--ease), box-shadow 0.4s var(--ease), background-color 0.4s var(--ease); }
 .person:hover { border-color: var(--line-strong); background: #fff; box-shadow: var(--shadow-soft); }
+.person-monogram { transition: scale 0.5s cubic-bezier(0.3, 1.4, 0.5, 1); }
+.person:hover .person-monogram { scale: 1.08; }
+.icon-tile svg { transition: rotate 0.6s var(--ease), scale 0.6s var(--ease); }
+.principle:hover .icon-tile svg { rotate: -8deg; scale: 1.12; }
 .person-monogram { position: relative; display: grid; place-items: center; width: 4rem; height: 4rem; margin-bottom: 2.5rem; border-radius: 50%; background: linear-gradient(145deg, #efeaf5, #ddd3e8); color: var(--accent-deep); font-size: 1.05rem; font-weight: 500; letter-spacing: 0.04em; }
 .person-monogram span { position: absolute; right: 0.1rem; bottom: 0.1rem; width: 0.8rem; height: 0.8rem; border: 2px solid var(--paper); border-radius: 50%; background: var(--sage); }
 .person-role { color: var(--accent-text); font-size: 0.7rem; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; }
@@ -379,6 +387,7 @@ h2 + p, .eyebrow + h2 { margin-top: 1.25rem; }
 @keyframes glyph-bar { 0% { stroke-dashoffset: 1; } 28%, 86% { stroke-dashoffset: 0; opacity: 1; } 100% { stroke-dashoffset: 0; opacity: 0; } }
 @keyframes draw { from { stroke-dashoffset: 1; } }
 @keyframes ring-breathe { from { scale: 0.93; } to { scale: 1.06; } }
+@keyframes ambient-drift { to { translate: var(--drift-x, 5rem) var(--drift-y, 4rem); scale: 1.12; } }
 @keyframes drop-in { from { opacity: 0; translate: 0 -22px; } }
 @keyframes progress { from { transform: scaleX(0); } }
 @keyframes engine-blink { from { opacity: 1; } to { opacity: 0.35; } }
@@ -407,6 +416,10 @@ h2 + p, .eyebrow + h2 { margin-top: 1.25rem; }
   .architecture-scene > g[transform]:nth-of-type(4n + 3) { animation-delay: 0.54s; }
   .architecture-scene > g[transform]:nth-of-type(4n) { animation-delay: 0.66s; }
 
+  .ambient i { animation: ambient-drift 19s ease-in-out infinite alternate; }
+  .ambient i:last-child { --drift-x: 7rem; --drift-y: -5rem; animation-duration: 26s; }
+  .foundation > span:not(.foundation-label) svg { animation: float 4.5s ease-in-out infinite alternate; }
+  .foundation > span:nth-child(odd) svg { animation-delay: -2.2s; }
   .contact-ring { animation: ring-breathe 6s ease-in-out infinite alternate; }
   .ring-two { animation-delay: -2s; }
   .ring-three { animation-delay: -4s; }
