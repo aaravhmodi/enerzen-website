@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@property --engine-drift { syntax: "<number>"; inherits: true; initial-value: 0; }
+
 :root {
   --paper: #faf9f7;
   --surface: #ffffff;
@@ -187,19 +189,39 @@ h2 + p, .eyebrow + h2 { margin-top: 1.25rem; }
 .engine-chart { width: 100%; height: auto; margin-block: 0.25rem 0.5rem; }
 .engine-chart text { fill: #8f839e; font-size: 9px; font-weight: 500; letter-spacing: 0.14em; }
 .engine-grid { stroke: rgb(255 255 255 / 0.06); }
-.engine-dot { fill: #5d516b; transition: fill 0.5s var(--ease); }
-.engine-dot.is-shortlist { fill: #d5c8e6; }
-.engine-guide { stroke: #b9cfa9; stroke-dasharray: 3 5; stroke-opacity: 0.4; transition: transform 0.8s var(--ease); }
-.engine-marker { transition: transform 0.8s var(--ease); }
-.engine-marker circle { fill: rgb(185 207 169 / 0.14); stroke: rgb(185 207 169 / 0.55); }
+.engine-status { transition: color 0.4s var(--ease); }
+.engine-explorer.is-live:not(.is-searching) .engine-status { color: #b9cfa9; }
+.engine-explorer.is-searching .engine-status { animation: engine-blink 0.7s ease-in-out infinite alternate; }
+.engine-explorer.is-searching .engine-meter i { transition-duration: 0.18s; }
+/* Points arrive left to right, drift while the engine searches, then settle. */
+.engine-explorer { --engine-drift: 0; transition: --engine-drift 0.7s var(--ease); }
+.engine-explorer.is-searching { --engine-drift: 1; }
+.engine-dot { fill: #5d516b; opacity: 0; translate: 0 18px; transition: fill 0.4s var(--ease), opacity 0.6s var(--ease) var(--delay, 0ms), translate 0.8s var(--ease) var(--delay, 0ms); animation: engine-drift 1.1s ease-in-out infinite alternate paused; }
+.engine-dot:nth-child(3n) { animation-duration: 0.9s; animation-direction: alternate-reverse; }
+.engine-dot:nth-child(4n + 1) { animation-name: engine-drift-across; animation-duration: 1.3s; }
+.engine-explorer.is-live .engine-dot { opacity: 1; translate: none; }
+.engine-explorer.is-searching .engine-dot { animation-play-state: running; }
+.engine-dot.is-lit { fill: #d5c8e6; }
+.engine-sweep { stroke: #d5c8e6; stroke-opacity: 0; }
+.engine-explorer.is-searching .engine-sweep { animation: engine-sweep 1.5s linear both; }
+.engine-trail { opacity: 0; stroke: #b9cfa9; stroke-linejoin: round; stroke-opacity: 0.45; transition: opacity 0.9s var(--ease); }
+.engine-explorer.is-searching .engine-trail { opacity: 1; transition-duration: 0.1s; }
+.engine-guide { opacity: 0; stroke: #b9cfa9; stroke-dasharray: 3 5; stroke-opacity: 0.4; transition: transform 0.8s var(--ease), opacity 0.4s var(--ease); }
+.engine-marker { opacity: 0; transition: transform 0.8s var(--ease), opacity 0.4s var(--ease); }
+.engine-explorer.is-live :is(.engine-guide, .engine-marker) { opacity: 1; }
+.engine-explorer.is-searching :is(.engine-guide, .engine-marker) { transition-duration: 0.16s, 0.4s; }
+.engine-marker circle { fill: rgb(185 207 169 / 0.14); stroke: rgb(185 207 169 / 0.55); transform-box: fill-box; transform-origin: center; }
 .engine-marker circle:last-child { fill: #b9cfa9; stroke: none; }
-.engine-marker .engine-pulse { fill: none; transform-box: fill-box; transform-origin: center; animation: pulse 2.8s var(--ease) infinite; }
+.engine-marker .engine-pulse { fill: none; opacity: 0; }
+.engine-explorer.is-live:not(.is-searching) .engine-pulse { animation: pulse 2.8s var(--ease) 0.5s infinite; }
+.engine-explorer.is-live:not(.is-searching) .engine-ring { animation: engine-found 0.7s var(--ease); }
+@media (scripting: none) { .engine-dot, .engine-guide, .engine-marker { opacity: 1; translate: none; } }
 .engine-figure figcaption { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.35rem 1.5rem; padding-top: 1rem; border-top: 1px solid rgb(255 255 255 / 0.08); color: #a99db7; font-size: 0.78rem; }
 .engine-legend, .engine-legend > span { display: inline-flex; align-items: center; }
 .engine-legend { gap: 1.1rem; }
 .engine-legend > span { gap: 0.45rem; }
 .engine-legend i { width: 0.45rem; height: 0.45rem; border-radius: 50%; background: #5d516b; }
-.engine-legend i.is-shortlist { background: #d5c8e6; }
+.engine-legend i.is-lit { background: #d5c8e6; }
 .engine-legend i.is-best { background: #b9cfa9; box-shadow: 0 0 0 3px rgb(185 207 169 / 0.22); }
 .engine-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2rem clamp(1.5rem, 4vw, 3.5rem); margin-top: clamp(3rem, 6vw, 4.5rem); }
 .engine-steps li { padding-top: 1.25rem; border-top: 1px solid rgb(255 255 255 / 0.16); }
@@ -208,7 +230,7 @@ h2 + p, .eyebrow + h2 { margin-top: 1.25rem; }
 .engine-steps p { margin-top: 0.75rem; color: #cfc6da; font-size: 0.98rem; }
 .engine-facts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 2rem clamp(1.5rem, 4vw, 3.5rem); margin-top: clamp(3rem, 6vw, 4.5rem); padding-top: clamp(2rem, 4vw, 3rem); border-top: 1px solid rgb(255 255 255 / 0.16); }
 .engine-facts > div { display: flex; flex-direction: column-reverse; justify-content: flex-end; }
-.engine-facts dd { font-size: clamp(2.6rem, 4.6vw, 4rem); font-weight: 500; line-height: 1; letter-spacing: -0.05em; }
+.engine-facts dd { font-size: clamp(2.6rem, 4.6vw, 4rem); font-weight: 500; font-variant-numeric: tabular-nums; line-height: 1; letter-spacing: -0.05em; }
 .engine-facts dt { max-width: 15rem; margin-top: 0.9rem; color: #b9adc8; font-size: 0.9rem; line-height: 1.5; }
 
 /* Homes */
@@ -306,6 +328,13 @@ h2 + p, .eyebrow + h2 { margin-top: 1.25rem; }
 @keyframes rise { from { opacity: 0; transform: translateY(1.75rem); } }
 @keyframes dialog-in { from { opacity: 0; transform: translateY(1rem) scale(0.98); } }
 @keyframes float { from { transform: translateY(-5px); } to { transform: translateY(5px); } }
+@keyframes drop-in { from { opacity: 0; translate: 0 -22px; } }
+@keyframes progress { from { transform: scaleX(0); } }
+@keyframes engine-blink { from { opacity: 1; } to { opacity: 0.35; } }
+@keyframes engine-drift { from { transform: translate(calc(var(--engine-drift) * -3.5px), calc(var(--engine-drift) * 2px)); } to { transform: translate(calc(var(--engine-drift) * 3.5px), calc(var(--engine-drift) * -2px)); } }
+@keyframes engine-drift-across { from { transform: translate(calc(var(--engine-drift) * 2px), calc(var(--engine-drift) * 3.5px)); } to { transform: translate(calc(var(--engine-drift) * -2px), calc(var(--engine-drift) * -3.5px)); } }
+@keyframes engine-sweep { 0% { stroke-opacity: 0; transform: translateX(0); } 12%, 88% { stroke-opacity: 0.45; } 100% { stroke-opacity: 0; transform: translateX(420px); } }
+@keyframes engine-found { from { transform: scale(2.4); opacity: 0; } }
 @keyframes pulse { 0% { opacity: 0.7; transform: scale(0.5); } 70%, 100% { opacity: 0; transform: scale(1.25); } }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -316,6 +345,14 @@ h2 + p, .eyebrow + h2 { margin-top: 1.25rem; }
   .hero-copy > :nth-child(5) { animation-delay: 0.32s; }
   .hero-art { animation: rise 1.1s var(--ease) 0.15s both; }
   .hero-art .architecture-scene { animation: float 9s ease-in-out infinite alternate; }
+  .architecture-scene > g[transform] { animation: drop-in 0.8s var(--ease) 0.3s both; }
+  .architecture-scene > g[transform]:nth-of-type(4n + 2) { animation-delay: 0.42s; }
+  .architecture-scene > g[transform]:nth-of-type(4n + 3) { animation-delay: 0.54s; }
+  .architecture-scene > g[transform]:nth-of-type(4n) { animation-delay: 0.66s; }
+
+  @supports (animation-timeline: scroll()) {
+    .site-header::after { content: ""; position: absolute; right: 0; bottom: -1px; left: 0; height: 2px; background: var(--accent); transform-origin: 0 50%; animation: progress linear both; animation-timeline: scroll(root); }
+  }
 
   @supports (animation-timeline: view()) {
     :is(.section-heading, .system-heading, .people-intro, .principle, .system-explorer, .engine-explorer, .engine-steps li, .engine-facts, .home-explorer, .person, .contact-card) { animation: rise linear both; animation-timeline: view(); animation-range: entry 0px entry 240px; }

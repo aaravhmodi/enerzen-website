@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type FormEvent, type KeyboardEvent } from "react";
 import { Architecture, Assembly } from "./Architecture";
 import { Arrow, Brand } from "./Primitives";
 
@@ -55,16 +55,63 @@ const candidates = (() => {
 const chartX = (candidate: number[]) => Math.round(560 + candidate[0] * 4200) / 10;
 const chartY = (candidate: number[]) => Math.round(3100 - candidate[3] * 2900) / 10;
 
+// Ranks the marker visits on its way to the best fit, so the search visibly homes in.
+const searchRanks = [80, 45, 24, 12, 5, 2, 0];
+const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
 export function EngineExplorer() {
   const [active, setActive] = useState(0);
+  const [inView, setInView] = useState(false);
+  const [step, setStep] = useState<number | null>(null);
+  const figure = useRef<HTMLElement>(null);
   const ranked = useMemo(() => {
     const weights = priorities[active].weights;
     return candidates.map((candidate, i) => ({ i, score: candidate.reduce((sum, value, m) => sum + value * weights[m], 0) })).sort((a, b) => a.score - b.score).map(item => item.i);
   }, [active]);
-  const best = candidates[ranked[0]];
-  const shortlist = new Set(ranked.slice(1, 7));
-  const x = chartX(best), y = chartY(best);
-  return <div className="engine-explorer"><div className="engine-controls"><h3>What matters most to you?</h3><p>Choose a priority and watch the engine re-rank every option.</p><fieldset className="engine-priorities"><legend className="sr-only">Priority</legend>{priorities.map((item, i) => <label key={item.name}><input type="radio" name="engine-priority" checked={active === i} onChange={() => setActive(i)}/><span>{item.name}</span></label>)}</fieldset><div className="engine-readout" aria-live="polite"><p className="engine-note">{priorities[active].note}</p><dl className="engine-metrics">{metrics.map((metric, m) => { const ahead = Math.round(100 * candidates.filter(candidate => candidate[m] > best[m]).length / (candidates.length - 1)); return <div key={metric.label}><dt>{metric.label}</dt><dd><span className="engine-value">{metric.format(best[m])}<small>{metric.unit}</small></span><span className="engine-meter" aria-hidden="true"><i style={{ width: `${ahead}%` }}/></span><span className="engine-rank">Ahead of {ahead}% of options</span></dd></div>; })}</dl></div><a className="text-link" href="#contact">See what it finds for your site <Arrow /></a></div><figure className="engine-figure"><div className="art-topline"><span>EVERY POINT IS ONE WAY TO BUILD THE SAME HOME</span><span>03 — THE ENGINE</span></div><svg className="engine-chart" viewBox="0 0 520 348" fill="none" role="img" aria-label={`Illustrative chart of ${candidates.length} ways to build the same home, plotted by upfront cost and energy use, with the best fit for ${priorities[active].name.toLowerCase()} highlighted`}><g className="engine-grid">{[0, 1, 2, 3, 4].map(n => <path key={n} d={`M56 ${20 + n * 72.5}h420M${56 + n * 105} 20v290`}/>)}</g>{candidates.map((candidate, i) => <circle key={i} className={`engine-dot ${shortlist.has(i) ? "is-shortlist" : ""}`} cx={chartX(candidate)} cy={chartY(candidate)} r={shortlist.has(i) ? 4 : 3}/>)}<path className="engine-guide" d="M56 0h420" style={{ transform: `translateY(${y}px)` }}/><path className="engine-guide" d="M0 20v290" style={{ transform: `translateX(${x}px)` }}/><g className="engine-marker" style={{ transform: `translate(${x}px, ${y}px)` }}><circle className="engine-pulse" r="16"/><circle r="10"/><circle r="5"/></g><text x="476" y="334" textAnchor="end">UPFRONT COST →</text><text transform="translate(36 20) rotate(-90)" textAnchor="end">ENERGY USE →</text></svg><figcaption><span className="engine-legend"><span><i className="is-best"/>Best fit</span><span><i className="is-shortlist"/>Shortlist</span><span><i/>Considered</span></span><span>Illustrative demonstration · not project results</span></figcaption></figure></div>;
+  useEffect(() => {
+    const node = figure.current;
+    if (!node) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return;
+      observer.disconnect(); setInView(true); setStep(reducedMotion() ? null : 0);
+    }, { threshold: 0.35 });
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+  useEffect(() => {
+    if (step === null) return;
+    const timer = window.setTimeout(() => setStep(step + 1 < searchRanks.length ? step + 1 : null), step === 0 ? 320 : 150 + step * 22);
+    return () => window.clearTimeout(timer);
+  }, [step, active]);
+  const searching = step !== null;
+  const path = searchRanks.map(rank => ranked[rank]);
+  const current = candidates[searching ? path[step] : ranked[0]];
+  const lit = new Set(searching ? path.slice(0, step) : ranked.slice(1, 7));
+  const x = chartX(current), y = chartY(current);
+  return <div className={`engine-explorer ${inView ? "is-live" : ""} ${searching ? "is-searching" : ""}`}><div className="engine-controls"><h3>What matters most to you?</h3><p>Choose a priority and watch the engine re-rank every option.</p><fieldset className="engine-priorities"><legend className="sr-only">Priority</legend>{priorities.map((item, i) => <label key={item.name}><input type="radio" name="engine-priority" checked={active === i} onChange={() => { setActive(i); setStep(inView && !reducedMotion() ? 0 : null); }}/><span>{item.name}</span></label>)}</fieldset><div className="engine-readout" aria-live="polite" aria-busy={searching}><p className="engine-note">{priorities[active].note}</p><dl className="engine-metrics">{metrics.map((metric, m) => { const ahead = Math.round(100 * candidates.filter(candidate => candidate[m] > current[m]).length / (candidates.length - 1)); return <div key={metric.label}><dt>{metric.label}</dt><dd><span className="engine-value">{metric.format(current[m])}<small>{metric.unit}</small></span><span className="engine-meter" aria-hidden="true"><i style={{ width: `${ahead}%` }}/></span><span className="engine-rank">Ahead of {ahead}% of options</span></dd></div>; })}</dl></div><a className="text-link" href="#contact">See what it finds for your site <Arrow /></a></div><figure className="engine-figure" ref={figure}><div className="art-topline"><span>EVERY POINT IS ONE WAY TO BUILD THE SAME HOME</span><span className="engine-status">{!inView ? "READY" : searching ? "SEARCHING" : "BEST FIT FOUND"}</span></div><svg className="engine-chart" viewBox="0 0 520 348" fill="none" role="img" aria-label={`Illustrative chart of ${candidates.length} ways to build the same home, plotted by upfront cost and energy use, with the best fit for ${priorities[active].name.toLowerCase()} highlighted`}><g className="engine-grid">{[0, 1, 2, 3, 4].map(n => <path key={n} d={`M56 ${20 + n * 72.5}h420M${56 + n * 105} 20v290`}/>)}</g><path className="engine-sweep" d="M56 20v290"/><g>{candidates.map((candidate, i) => <circle key={i} className={`engine-dot ${lit.has(i) ? "is-lit" : ""}`} cx={chartX(candidate)} cy={chartY(candidate)} r={lit.has(i) ? 4 : 3} style={{ "--delay": `${Math.round(candidate[0] * 450)}ms` } as CSSProperties}/>)}</g><polyline className="engine-trail" points={path.slice(0, searching ? step + 1 : path.length).map(i => `${chartX(candidates[i])},${chartY(candidates[i])}`).join(" ")}/><path className="engine-guide" d="M56 0h420" style={{ transform: `translateY(${y}px)` }}/><path className="engine-guide" d="M0 20v290" style={{ transform: `translateX(${x}px)` }}/><g className="engine-marker" style={{ transform: `translate(${x}px, ${y}px)` }}><circle className="engine-pulse" r="16"/><circle className="engine-ring" r="10"/><circle r="5"/></g><text x="476" y="334" textAnchor="end">UPFRONT COST →</text><text transform="translate(36 20) rotate(-90)" textAnchor="end">ENERGY USE →</text></svg><figcaption><span className="engine-legend"><span><i className="is-best"/>Best fit</span><span><i className="is-lit"/>Shortlist</span><span><i/>Considered</span></span><span>Illustrative demonstration · not project results</span></figcaption></figure></div>;
+}
+
+export function CountUp({ value }: { value: string }) {
+  const node = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    const element = node.current, match = value.match(/^(\D*)(\d+)(.*)$/);
+    if (!element || !match || reducedMotion()) return;
+    let frame = 0;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return;
+      observer.disconnect();
+      const start = performance.now();
+      const tick = (now: number) => {
+        const progress = Math.min(1, (now - start) / 1400);
+        element.textContent = `${match[1]}${Math.round(Number(match[2]) * (1 - (1 - progress) ** 3))}${match[3]}`;
+        if (progress < 1) frame = requestAnimationFrame(tick);
+      };
+      frame = requestAnimationFrame(tick);
+    }, { threshold: 0.6 });
+    observer.observe(element);
+    return () => { observer.disconnect(); cancelAnimationFrame(frame); };
+  }, [value]);
+  return <span ref={node}>{value}</span>;
 }
 
 const homes = [
