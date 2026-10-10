@@ -250,7 +250,18 @@ h2 + p, .eyebrow + h2 { margin-top: 1.25rem; }
 .engine-legend i.is-best { background: #b9cfa9; box-shadow: 0 0 0 3px rgb(185 207 169 / 0.22); }
 .engine-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2rem clamp(1.5rem, 4vw, 3.5rem); margin-top: clamp(3rem, 6vw, 4.5rem); }
 .engine-steps li { padding-top: 1.25rem; border-top: 1px solid rgb(255 255 255 / 0.16); }
+.engine-steps li { position: relative; view-timeline: --step; }
+.step-top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
 .engine-steps .small-index { color: #a99db7; }
+/* Small looping figures: a question typed, options tested, a shortlist ranked. */
+.step-glyph { flex: none; width: 6rem; height: 2.5rem; fill: none; stroke: #8f839e; stroke-linecap: round; }
+.step-glyph .is-accent { stroke: #b9cfa9; }
+.glyph-type { stroke: #d5c8e6; stroke-width: 2; stroke-dasharray: 1; animation: glyph-type 4.8s steps(11) infinite; }
+.glyph-caret { stroke-width: 1.5; animation: engine-blink 0.55s ease-in-out infinite alternate; }
+.glyph-dots circle { fill: #8f839e; stroke: none; animation: glyph-wave 2.6s ease-in-out infinite; }
+.glyph-bars path { stroke-width: 5; stroke-dasharray: 1; animation: glyph-bar 5s var(--ease) infinite; }
+.glyph-bars path:nth-child(2) { animation-delay: 0.18s; }
+.glyph-bars path:nth-child(3) { animation-delay: 0.36s; }
 .engine-steps h3 { margin-top: 1.75rem; font-size: 1.4rem; line-height: 1.15; letter-spacing: -0.025em; }
 .engine-steps p { margin-top: 0.75rem; color: #cfc6da; font-size: 0.98rem; }
 .engine-facts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 2rem clamp(1.5rem, 4vw, 3.5rem); margin-top: clamp(3rem, 6vw, 4.5rem); padding-top: clamp(2rem, 4vw, 3rem); border-top: 1px solid rgb(255 255 255 / 0.16); }
@@ -359,6 +370,9 @@ h2 + p, .eyebrow + h2 { margin-top: 1.25rem; }
 @keyframes fill-text { to { background-position-x: 0; } }
 @keyframes layer-settle { from { opacity: 0; translate: 0 var(--from, 0); } }
 @keyframes section-in { from { scale: 0.93; border-radius: 4.5rem; } }
+@keyframes glyph-type { 0% { stroke-dashoffset: 1; } 55%, 92% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: 1; } }
+@keyframes glyph-wave { 0%, 55%, 100% { fill: #5d516b; } 22% { fill: #e3d9ef; } }
+@keyframes glyph-bar { 0% { stroke-dashoffset: 1; } 28%, 86% { stroke-dashoffset: 0; opacity: 1; } 100% { stroke-dashoffset: 0; opacity: 0; } }
 @keyframes drop-in { from { opacity: 0; translate: 0 -22px; } }
 @keyframes progress { from { transform: scaleX(0); } }
 @keyframes engine-blink { from { opacity: 1; } to { opacity: 0.35; } }
@@ -394,6 +408,7 @@ h2 + p, .eyebrow + h2 { margin-top: 1.25rem; }
   @supports (animation-timeline: view()) {
     /* The statement inks itself in, line by line, as it crosses the screen. */
     .statement span { background: linear-gradient(90deg, var(--ink) 50%, #d2cad9 50%) 100% 0 / 200% 100% no-repeat; background-clip: text; color: transparent; animation: fill-text linear both; animation-timeline: --statement; animation-range: entry 70% cover 62%; }
+    .engine-steps li::before { content: ""; position: absolute; top: -1px; right: 0; left: 0; height: 1px; background: #b9cfa9; transform-origin: 0 50%; animation: progress linear both; animation-timeline: --step; animation-range: entry 60% cover 42%; }
     /* The building comes together as its figure scrolls into place. */
     .assembly-layer { animation: layer-settle linear both; animation-timeline: --assembly; animation-range: entry 15% cover 48%; }
     .assembly-layer:nth-child(2) { --from: 4.5rem; }
