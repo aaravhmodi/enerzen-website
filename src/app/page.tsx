@@ -1,7 +1,7 @@
 import type { CSSProperties } from "react";
 import { Architecture } from "@/components/Architecture";
 import { Arrow, Brand, Icon } from "@/components/Primitives";
-import { CountUp, EngineExplorer, Enquiry, HomeExplorer, Navigation, PointerEffects, SystemExplorer } from "@/components/Interactions";
+import { CountUp, EngineExplorer, Enquiry, HomeExplorer, Navigation, PageEffects, SystemExplorer } from "@/components/Interactions";
 const principles = [
   { icon: "comfort", number: "01", title: "Feel the difference.", text: "Even temperatures. Fresh air. Quiet spaces. Building science that makes everyday life more comfortable." },
   { icon: "leaf", number: "02", title: "Leave a lighter footprint.", text: "Thoughtful material choices and an efficient building envelope, designed to use less energy over a home’s lifetime." },
@@ -35,10 +35,10 @@ export default function Home() {
     <div className="site" id="top">
       <a href="#main" className="skip-link">Skip to content</a>
       <div className="ambient" aria-hidden="true"><i /><i /></div>
-      <PointerEffects />
+      <PageEffects />
       <Navigation />
       <main id="main">
-        <section className="hero container" aria-labelledby="hero-title" data-tilt>
+        <section className="hero container" aria-labelledby="hero-title" data-tilt=".hero-art">
           <div className="hero-copy">
             <p className="eyebrow"><span className="status-dot" /> A MORE THOUGHTFUL WAY TO BUILD</p>
             <h1 id="hero-title"><span>Better homes.</span><span className="muted-title">Better lives.</span></h1>

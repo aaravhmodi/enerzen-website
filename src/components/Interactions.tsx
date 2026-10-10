@@ -35,7 +35,7 @@ export function SystemExplorer() {
     observer.observe(node);
     return () => observer.disconnect();
   }, []);
-  return <div className="system-explorer" ref={root}><div className="system-list">{systems.map((item, i) => <div className={`system-item ${active === i ? "is-active" : ""}`} key={item.title}><h3><button id={`system-button-${i}`} aria-expanded={active === i} aria-controls={`system-panel-${i}`} onClick={() => { setActive(i); setAuto(false); }}><span className="system-number">0{i + 1}</span><span>{item.title}</span><span className="expand-mark" aria-hidden="true">{active === i ? "−" : "+"}</span></button></h3><div id={`system-panel-${i}`} role="region" aria-labelledby={`system-button-${i}`} hidden={active !== i}><p>{item.text}</p></div>{auto && visible && active === i && <span className="system-progress" onAnimationEnd={() => setActive((i + 1) % systems.length)}/>}</div>)}</div><figure className="system-figure" data-glow data-tilt><div className="art-topline"><span>INTELLIGENCE IN EVERY LAYER</span><span>02 — THE SYSTEM</span></div><Assembly active={active}/><figcaption><span className="system-caption-label">{systems[active].label}</span><span>Illustrative assembly · not a technical specification</span></figcaption></figure></div>;
+  return <div className="system-explorer" ref={root}><div className="system-list">{systems.map((item, i) => <div className={`system-item ${active === i ? "is-active" : ""}`} key={item.title}><h3><button id={`system-button-${i}`} aria-expanded={active === i} aria-controls={`system-panel-${i}`} onClick={() => { setActive(i); setAuto(false); }}><span className="system-number">0{i + 1}</span><span>{item.title}</span><span className="expand-mark" aria-hidden="true">{active === i ? "−" : "+"}</span></button></h3><div id={`system-panel-${i}`} role="region" aria-labelledby={`system-button-${i}`} hidden={active !== i}><p>{item.text}</p></div>{auto && visible && active === i && <span className="system-progress" onAnimationEnd={() => setActive((i + 1) % systems.length)}/>}</div>)}</div><figure className="system-figure" data-glow data-tilt=".assembly"><div className="art-topline"><span>INTELLIGENCE IN EVERY LAYER</span><span>02 — THE SYSTEM</span></div><Assembly active={active}/><figcaption><span className="system-caption-label">{systems[active].label}</span><span>Illustrative assembly · not a technical specification</span></figcaption></figure></div>;
 }
 
 const priorities = [
@@ -96,7 +96,7 @@ export function EngineExplorer() {
   }, []);
   useEffect(() => {
     if (step === null) return;
-    const timer = window.setTimeout(() => setStep(step + 1 < searchRanks.length ? step + 1 : null), step < 0 ? 900 : step === 0 ? 320 : 190 + step * 30);
+    const timer = window.setTimeout(() => setStep(step + 1 < searchRanks.length ? step + 1 : null), step < 0 ? 520 : step === 0 ? 140 : 170 + step * 25);
     return () => window.clearTimeout(timer);
   }, [step, active]);
   const axis = priorities[active].axis;
@@ -109,25 +109,84 @@ export function EngineExplorer() {
     setActive(i);
     setStep(!inView || reducedMotion() ? null : priorities[i].axis === axis ? 0 : -1);
   }
-  return <div data-glow className={`engine-explorer ${inView ? "is-live" : ""} ${visible ? "is-visible" : ""} ${plotting ? "is-plotting" : ""} ${searching ? "is-searching" : ""}`}><div className="engine-controls"><h3>What matters most to you?</h3><p>Choose a priority and watch the engine re-rank every option.</p><fieldset className="engine-priorities"><legend className="sr-only">Priority</legend>{priorities.map((item, i) => <label key={item.name}><input type="radio" name="engine-priority" checked={active === i} onChange={() => choose(i)}/><span>{item.name}</span></label>)}</fieldset><div className="engine-readout" aria-live="polite" aria-busy={step !== null}><p className="engine-note" key={active}>{priorities[active].note}</p><dl className="engine-metrics">{metrics.map((metric, m) => { const ahead = Math.round(100 * candidates.filter(candidate => candidate[m] > current[m]).length / (candidates.length - 1)); return <div key={metric.label} className={m === 0 || m === axis ? "is-plotted" : ""}><dt>{metric.label}</dt><dd><span className="engine-value">{metric.format(current[m])}<small>{metric.unit}</small></span><span className="engine-meter" aria-hidden="true"><i style={{ width: `${ahead}%` }}/></span><span className="engine-rank">Ahead of {ahead}% of options</span></dd></div>; })}</dl></div><a className="text-link" href="#contact">See what it finds for your site <Arrow /></a></div><figure className="engine-figure" ref={figure}><div className="art-topline"><span>EVERY POINT IS ONE WAY TO BUILD THE SAME HOME</span><span className="engine-status">{!inView ? "READY" : plotting ? "RE-PLOTTING" : searching ? "SEARCHING" : "BEST FIT FOUND"}</span></div><svg className="engine-chart" viewBox="0 0 520 348" fill="none" role="img" aria-label={`Illustrative chart of ${candidates.length} ways to build the same home, plotted by ${axes[0]} and ${axes[axis]}, with the best fit for ${priorities[active].name.toLowerCase()} highlighted`}><defs><radialGradient id="engine-glow"><stop stopColor="#b9cfa9" stopOpacity=".15"/><stop offset="1" stopColor="#b9cfa9" stopOpacity="0"/></radialGradient></defs><g className="engine-grid">{[0, 1, 2, 3, 4].map(n => <path key={n} d={`M56 ${20 + n * 72.5}h420M${56 + n * 105} 20v290`}/>)}</g><circle className="engine-glow" r="64" fill="url(#engine-glow)" style={{ transform: `translate(${x}px, ${y}px)` }}/><g>{candidates.map((candidate, i) => <g key={i} className="engine-point" style={{ transform: `translate(${chartX(candidate)}px, ${chartY(candidate, axis)}px)`, "--delay": `${Math.round(candidate[0] * 450)}ms`, "--phase": `${-((i * 977) % 6000)}ms` } as CSSProperties}><circle className={`engine-dot ${lit.has(i) ? "is-lit" : ""}`} r={lit.has(i) ? 4 : 3}/></g>)}</g><polyline className="engine-trail" points={path.slice(0, searching ? step + 1 : path.length).map(i => `${chartX(candidates[i])},${chartY(candidates[i], axis)}`).join(" ")}/><path className="engine-guide" d="M56 0h420" style={{ transform: `translateY(${y}px)` }}/><path className="engine-guide" d="M0 20v290" style={{ transform: `translateX(${x}px)` }}/><g className="engine-marker" style={{ transform: `translate(${x}px, ${y}px)` }}><circle className="engine-pulse" r="16"/><circle className="engine-ring" r="10"/><circle r="5"/></g><text x="476" y="334" textAnchor="end">{axes[0].toUpperCase()} →</text><text key={axis} className="engine-axis" transform="translate(36 20) rotate(-90)" textAnchor="end">{axes[axis].toUpperCase()} →</text></svg><figcaption><span className="engine-legend"><span><i className="is-best"/>Best fit</span><span><i className="is-lit"/>Shortlist</span><span><i/>Considered</span></span><span>Illustrative demonstration · not project results</span></figcaption></figure></div>;
+  return <div data-glow className={`engine-explorer ${inView ? "is-live" : ""} ${plotting ? "is-plotting" : ""} ${searching ? "is-searching" : ""}`}><div className="engine-controls"><h3>What matters most to you?</h3><p>Choose a priority and watch the engine re-rank every option.</p><fieldset className="engine-priorities"><legend className="sr-only">Priority</legend>{priorities.map((item, i) => <label key={item.name}><input type="radio" name="engine-priority" checked={active === i} onChange={() => choose(i)}/><span>{item.name}</span></label>)}</fieldset><div className="engine-readout" aria-live="polite" aria-busy={step !== null}><p className="engine-note" key={active}>{priorities[active].note}</p><dl className="engine-metrics">{metrics.map((metric, m) => { const ahead = Math.round(100 * candidates.filter(candidate => candidate[m] > current[m]).length / (candidates.length - 1)); return <div key={metric.label} className={m === 0 || m === axis ? "is-plotted" : ""}><dt>{metric.label}</dt><dd><span className="engine-value">{metric.format(current[m])}<small>{metric.unit}</small></span><span className="engine-meter" aria-hidden="true"><i style={{ width: `${ahead}%` }}/></span><span className="engine-rank">Ahead of {ahead}% of options</span></dd></div>; })}</dl></div><a className="text-link" href="#contact">See what it finds for your site <Arrow /></a></div><figure className="engine-figure" ref={figure}><div className="art-topline"><span>EVERY POINT IS ONE WAY TO BUILD THE SAME HOME</span><span className="engine-status">{!inView ? "READY" : plotting ? "RE-PLOTTING" : searching ? "SEARCHING" : "BEST FIT FOUND"}</span></div><div className="engine-plot"><EngineDots axis={axis} lit={lit} live={inView} busy={step !== null} running={visible}/><svg className="engine-chart" viewBox="0 0 520 348" fill="none" role="img" aria-label={`Illustrative chart of ${candidates.length} ways to build the same home, plotted by ${axes[0]} and ${axes[axis]}, with the best fit for ${priorities[active].name.toLowerCase()} highlighted`}><defs><radialGradient id="engine-glow"><stop stopColor="#b9cfa9" stopOpacity=".15"/><stop offset="1" stopColor="#b9cfa9" stopOpacity="0"/></radialGradient></defs><g className="engine-grid">{[0, 1, 2, 3, 4].map(n => <path key={n} d={`M56 ${20 + n * 72.5}h420M${56 + n * 105} 20v290`}/>)}</g><circle className="engine-glow" r="64" fill="url(#engine-glow)" style={{ transform: `translate(${x}px, ${y}px)` }}/><polyline className="engine-trail" points={path.slice(0, searching ? step + 1 : path.length).map(i => `${chartX(candidates[i])},${chartY(candidates[i], axis)}`).join(" ")}/><path className="engine-guide" d="M56 0h420" style={{ transform: `translateY(${y}px)` }}/><path className="engine-guide" d="M0 20v290" style={{ transform: `translateX(${x}px)` }}/><g className="engine-marker" style={{ transform: `translate(${x}px, ${y}px)` }}><circle className="engine-pulse" r="16"/><circle className="engine-ring" r="10"/><circle r="5"/></g><text x="476" y="334" textAnchor="end">{axes[0].toUpperCase()} →</text><text key={axis} className="engine-axis" transform="translate(36 20) rotate(-90)" textAnchor="end">{axes[axis].toUpperCase()} →</text></svg></div><figcaption><span className="engine-legend"><span><i className="is-best"/>Best fit</span><span><i className="is-lit"/>Shortlist</span><span><i/>Considered</span></span><span>Illustrative demonstration · not project results</span></figcaption></figure></div>;
 }
 
-// Hands the pointer position to CSS: --mx/--my in pixels on [data-glow], --px/--py from -1 to 1 on [data-tilt].
-export function PointerEffects() {
+// The point cloud is painted on a canvas. As 150 animated SVG nodes it cost a style and paint pass on every frame.
+function EngineDots({ axis, lit, live, busy, running }: { axis: number; lit: Set<number>; live: boolean; busy: boolean; running: boolean }) {
+  const canvas = useRef<HTMLCanvasElement>(null);
+  const scene = useRef({ axis, lit, live, busy });
+  const memory = useRef<{ points: { y: number; hold: number; shown: number }[]; since: number; drift: number } | null>(null);
+  const redraw = useRef<(() => void) | null>(null);
+  useEffect(() => { scene.current = { axis, lit, live, busy }; redraw.current?.(); });
+  useEffect(() => {
+    const node = canvas.current, context = node?.getContext("2d");
+    if (!node || !context) return;
+    const still = reducedMotion();
+    const state = (memory.current ??= { points: candidates.map(candidate => ({ y: chartY(candidate, scene.current.axis), hold: 1, shown: 0 })), since: 0, drift: 0.45 });
+    let frame = 0, last = 0;
+    const draw = (now: number) => {
+      const { axis, lit, live, busy } = scene.current;
+      const size = Math.round(node.clientWidth * Math.min(2, window.devicePixelRatio || 1));
+      if (node.width !== size) { node.width = size; node.height = Math.round(size * 348 / 520); }
+      const elapsed = still ? Infinity : Math.min(64, now - last || 16), ease = (ms: number) => 1 - Math.exp(-elapsed / ms);
+      last = now;
+      if (live && !state.since) state.since = now;
+      state.drift += ((still ? 0 : busy ? 0.65 : 0.45) - state.drift) * ease(300);
+      context.setTransform(node.width / 520, 0, 0, node.width / 520, 0, 0);
+      context.clearRect(0, 0, 520, 348);
+      state.points.forEach((point, i) => {
+        const candidate = candidates[i];
+        point.y += (chartY(candidate, axis) - point.y) * ease(140);
+        point.hold += ((lit.has(i) ? 0 : 1) - point.hold) * ease(140);
+        point.shown += ((live && (still || now - state.since > candidate[0] * 450) ? 1 : 0) - point.shown) * ease(200);
+        if (point.shown < 0.01) return;
+        // Each point wanders on a small orbit of its own. Picked points have no reach, so they hold still.
+        const reach = state.drift * point.hold, picked = 1 - point.hold, angle = now / 1000 * (i % 2 ? 1 : -1) * (0.5 + (i % 5) * 0.1) + i * 2.4;
+        context.globalAlpha = point.shown;
+        context.fillStyle = `rgb(${Math.round(93 + 120 * picked)} ${Math.round(81 + 119 * picked)} ${Math.round(107 + 123 * picked)})`;
+        context.beginPath();
+        context.arc(chartX(candidate) + reach * ((3 + i % 4) * Math.cos(angle) + (2 + i % 3) * Math.sin(angle * 0.6 + i)), point.y + reach * ((3 + i % 4) * Math.sin(angle) + (2 + i % 3) * Math.cos(angle * 0.45 + i)), 3 + picked, 0, Math.PI * 2);
+        context.fill();
+      });
+      if (running && !still) frame = requestAnimationFrame(draw);
+    };
+    redraw.current = () => { if (still || !running) draw(performance.now()); };
+    const observer = new ResizeObserver(() => redraw.current?.());
+    observer.observe(node);
+    if (running && !still) frame = requestAnimationFrame(draw);
+    return () => { cancelAnimationFrame(frame); observer.disconnect(); redraw.current = null; };
+  }, [running]);
+  return <canvas ref={canvas} className="engine-dots" aria-hidden="true"/>;
+}
+
+// Hands the pointer position to CSS at most once a frame: --mx/--my in pixels on [data-glow], and --px/--py from -1 to 1
+// on the element a [data-tilt] area names. Also marks sections that are off screen so their looping animations can pause.
+export function PageEffects() {
+  useEffect(() => {
+    const observer = new IntersectionObserver(entries => entries.forEach(entry => entry.target.classList.toggle("is-offscreen", !entry.isIntersecting)), { rootMargin: "20% 0px" });
+    document.querySelectorAll("main > section, .footer").forEach(section => observer.observe(section));
+    return () => observer.disconnect();
+  }, []);
   useEffect(() => {
     if (reducedMotion() || !window.matchMedia("(hover: hover)").matches) return;
-    let tilted: HTMLElement | null = null;
+    let tilted: HTMLElement | SVGElement | null = null, pending: PointerEvent | null = null, frame = 0;
     const level = () => { tilted?.style.removeProperty("--px"); tilted?.style.removeProperty("--py"); tilted = null; };
-    const move = (event: PointerEvent) => {
-      const target = event.target instanceof Element ? event.target : null;
-      const glow = target?.closest<HTMLElement>("[data-glow]"), tilt = target?.closest<HTMLElement>("[data-tilt]") ?? null;
+    const apply = () => {
+      frame = 0;
+      const event = pending, target = event?.target instanceof Element ? event.target : null;
+      if (!event || !target) return;
+      const glow = target.closest<HTMLElement>("[data-glow]"), area = target.closest<HTMLElement>("[data-tilt]");
+      const layer = area ? area.querySelector<HTMLElement | SVGElement>(area.dataset.tilt || "*") : null;
       if (glow) { const box = glow.getBoundingClientRect(); glow.style.setProperty("--mx", `${Math.round(event.clientX - box.left)}px`); glow.style.setProperty("--my", `${Math.round(event.clientY - box.top)}px`); }
-      if (tilt !== tilted) level();
-      if (tilt) { const box = tilt.getBoundingClientRect(); tilt.style.setProperty("--px", ((event.clientX - box.left) / box.width * 2 - 1).toFixed(3)); tilt.style.setProperty("--py", ((event.clientY - box.top) / box.height * 2 - 1).toFixed(3)); tilted = tilt; }
+      if (layer !== tilted) level();
+      if (area && layer) { const box = area.getBoundingClientRect(); layer.style.setProperty("--px", ((event.clientX - box.left) / box.width * 2 - 1).toFixed(3)); layer.style.setProperty("--py", ((event.clientY - box.top) / box.height * 2 - 1).toFixed(3)); tilted = layer; }
     };
+    const move = (event: PointerEvent) => { pending = event; frame ||= requestAnimationFrame(apply); };
+    const leave = () => { pending = null; level(); };
     document.addEventListener("pointermove", move, { passive: true });
-    document.documentElement.addEventListener("pointerleave", level);
-    return () => { document.removeEventListener("pointermove", move); document.documentElement.removeEventListener("pointerleave", level); };
+    document.documentElement.addEventListener("pointerleave", leave);
+    return () => { cancelAnimationFrame(frame); document.removeEventListener("pointermove", move); document.documentElement.removeEventListener("pointerleave", leave); };
   }, []);
   return null;
 }
@@ -174,7 +233,7 @@ export function HomeExplorer() {
     else return;
     event.preventDefault(); setActive(next); tabs.current[next]?.focus();
   }
-  return <div className="home-explorer"><div className="home-tabs" role="tablist" aria-label="Explore housing types" style={{ "--active": active } as CSSProperties}>{homes.map((item, i) => <button ref={el => { tabs.current[i] = el; }} id={`home-tab-${i}`} key={item.name} role="tab" aria-selected={active === i} aria-controls={`home-panel-${i}`} tabIndex={active === i ? 0 : -1} onClick={() => setActive(i)} onKeyDown={event => onKey(event, i)}><span className="tab-number">0{i + 1}</span>{item.name}<Arrow direction="diagonal"/></button>)}</div><div className="home-panel" id={`home-panel-${active}`} role="tabpanel" aria-labelledby={`home-tab-${active}`} tabIndex={0}><div className="home-details" key={home.name}><p className="eyebrow">{home.eyebrow}</p><h3>{home.title}</h3><p>{home.text}</p><ul>{home.uses.map(use => <li key={use}><span aria-hidden="true">↗</span>{use}</li>)}</ul><a className="text-link" href="#contact">Let’s explore your project <Arrow /></a></div><figure className="home-figure" key={home.variant} data-tilt><Architecture variant={home.variant}/><figcaption>Architectural concept · {home.name} housing</figcaption></figure><div className="home-panel-footer"><span><i />{home.footer}</span><span>THE ENERZEN PHILOSOPHY, AT EVERY SCALE</span></div></div></div>;
+  return <div className="home-explorer"><div className="home-tabs" role="tablist" aria-label="Explore housing types" style={{ "--active": active } as CSSProperties}>{homes.map((item, i) => <button ref={el => { tabs.current[i] = el; }} id={`home-tab-${i}`} key={item.name} role="tab" aria-selected={active === i} aria-controls={`home-panel-${i}`} tabIndex={active === i ? 0 : -1} onClick={() => setActive(i)} onKeyDown={event => onKey(event, i)}><span className="tab-number">0{i + 1}</span>{item.name}<Arrow direction="diagonal"/></button>)}</div><div className="home-panel" id={`home-panel-${active}`} role="tabpanel" aria-labelledby={`home-tab-${active}`} tabIndex={0}><div className="home-details" key={home.name}><p className="eyebrow">{home.eyebrow}</p><h3>{home.title}</h3><p>{home.text}</p><ul>{home.uses.map(use => <li key={use}><span aria-hidden="true">↗</span>{use}</li>)}</ul><a className="text-link" href="#contact">Let’s explore your project <Arrow /></a></div><figure className="home-figure" key={home.variant} data-tilt=".architecture"><Architecture variant={home.variant}/><figcaption>Architectural concept · {home.name} housing</figcaption></figure><div className="home-panel-footer"><span><i />{home.footer}</span><span>THE ENERZEN PHILOSOPHY, AT EVERY SCALE</span></div></div></div>;
 }
 
 export function Enquiry({ email }: { email: string }) {
