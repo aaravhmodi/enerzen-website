@@ -307,7 +307,7 @@ h2 + p, .eyebrow + h2 { margin-top: 1.25rem; }
 
 /* Contact */
 .contact-section { padding-bottom: clamp(3.5rem, 7vw, 6rem); }
-.contact-card { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr); overflow: hidden; border-radius: var(--radius-xl); background: radial-gradient(120% 140% at 100% 0%, #453a52 0%, var(--plum) 58%); color: #f4f0f8; }
+.contact-card { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr); overflow: clip; border-radius: var(--radius-xl); background: radial-gradient(120% 140% at 100% 0%, #453a52 0%, var(--plum) 58%); color: #f4f0f8; }
 .contact-copy { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; padding: clamp(2.25rem, 6vw, 5rem); }
 .contact-copy > .eyebrow { color: #c9bdd8; }
 .contact-copy > .eyebrow .status-dot { background: #a9bb9c; }
@@ -316,7 +316,8 @@ h2 + p, .eyebrow + h2 { margin-top: 1.25rem; }
 .contact-copy > h2 span { color: #a99db7; }
 .contact-copy > p:not(.eyebrow) { margin-top: 1.5rem; color: #cfc6da; font-size: 1.08rem; }
 .contact-copy > .button { margin-top: 2.25rem; }
-.contact-art { position: relative; display: grid; place-items: center; min-height: 30rem; overflow: hidden; }
+.contact-art { view-timeline: --blueprint; }
+.contact-art { position: relative; display: grid; place-items: center; min-height: 30rem; overflow: clip; }
 .contact-art svg { position: relative; width: min(72%, 19rem); height: auto; animation: float 9s ease-in-out infinite alternate; }
 .contact-ring { position: absolute; top: 50%; left: 50%; border: 1px solid rgb(255 255 255 / 0.09); border-radius: 50%; translate: -50% -50%; }
 .ring-one { width: 17rem; height: 17rem; background: radial-gradient(circle, rgb(233 227 241 / 0.08), transparent 70%); }
@@ -373,6 +374,8 @@ h2 + p, .eyebrow + h2 { margin-top: 1.25rem; }
 @keyframes glyph-type { 0% { stroke-dashoffset: 1; } 55%, 92% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: 1; } }
 @keyframes glyph-wave { 0%, 55%, 100% { fill: #5d516b; } 22% { fill: #e3d9ef; } }
 @keyframes glyph-bar { 0% { stroke-dashoffset: 1; } 28%, 86% { stroke-dashoffset: 0; opacity: 1; } 100% { stroke-dashoffset: 0; opacity: 0; } }
+@keyframes draw { from { stroke-dashoffset: 1; } }
+@keyframes ring-breathe { from { scale: 0.93; } to { scale: 1.06; } }
 @keyframes drop-in { from { opacity: 0; translate: 0 -22px; } }
 @keyframes progress { from { transform: scaleX(0); } }
 @keyframes engine-blink { from { opacity: 1; } to { opacity: 0.35; } }
@@ -401,6 +404,10 @@ h2 + p, .eyebrow + h2 { margin-top: 1.25rem; }
   .architecture-scene > g[transform]:nth-of-type(4n + 3) { animation-delay: 0.54s; }
   .architecture-scene > g[transform]:nth-of-type(4n) { animation-delay: 0.66s; }
 
+  .contact-ring { animation: ring-breathe 6s ease-in-out infinite alternate; }
+  .ring-two { animation-delay: -2s; }
+  .ring-three { animation-delay: -4s; }
+
   @supports (animation-timeline: scroll()) {
     .site-header::after { content: ""; position: absolute; right: 0; bottom: -1px; left: 0; height: 2px; background: var(--accent); transform-origin: 0 50%; animation: progress linear both; animation-timeline: scroll(root); }
   }
@@ -408,6 +415,8 @@ h2 + p, .eyebrow + h2 { margin-top: 1.25rem; }
   @supports (animation-timeline: view()) {
     /* The statement inks itself in, line by line, as it crosses the screen. */
     .statement span { background: linear-gradient(90deg, var(--ink) 50%, #d2cad9 50%) 100% 0 / 200% 100% no-repeat; background-clip: text; color: transparent; animation: fill-text linear both; animation-timeline: --statement; animation-range: entry 70% cover 62%; }
+    /* The wireframe home draws itself, like a plan being sketched. */
+    .contact-art path { stroke-dasharray: 1; animation: draw linear both; animation-timeline: --blueprint; animation-range: entry 40% cover 36%; }
     .engine-steps li::before { content: ""; position: absolute; top: -1px; right: 0; left: 0; height: 1px; background: #b9cfa9; transform-origin: 0 50%; animation: progress linear both; animation-timeline: --step; animation-range: entry 60% cover 42%; }
     /* The building comes together as its figure scrolls into place. */
     .assembly-layer { animation: layer-settle linear both; animation-timeline: --assembly; animation-range: entry 15% cover 48%; }
