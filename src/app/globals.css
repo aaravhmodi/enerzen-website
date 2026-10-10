@@ -149,6 +149,7 @@ h2 + p, .eyebrow + h2 { margin-top: 1.25rem; }
 .small-index { color: var(--ink-faint); font-size: 0.75rem; font-weight: 500; letter-spacing: 0.14em; }
 .principle h3 { font-size: 1.45rem; line-height: 1.15; letter-spacing: -0.025em; }
 .principle p { margin-top: 0.85rem; color: var(--ink-soft); font-size: 0.98rem; }
+.statement { max-width: 64rem; margin-top: clamp(4.5rem, 10vw, 8.5rem); font-size: clamp(1.9rem, 4.1vw, 3.5rem); font-weight: 500; line-height: 1.1; letter-spacing: -0.038em; text-wrap: balance; view-timeline: --statement; }
 
 /* System */
 .system-section { margin-inline: clamp(0.5rem, 1.5vw, 1.5rem); padding-block: clamp(4.5rem, 9vw, 8rem); border-radius: var(--radius-xl); background: var(--tint); }
@@ -354,6 +355,7 @@ h2 + p, .eyebrow + h2 { margin-top: 1.25rem; }
 @keyframes line-in { from { opacity: 0; translate: 0 0.55em; clip-path: inset(0 0 100%); } to { clip-path: inset(-0.3em -0.2em); } }
 @keyframes sun-travel { from { offset-distance: 8%; } to { offset-distance: 92%; } }
 @keyframes dash-drift { to { stroke-dashoffset: -64; } }
+@keyframes fill-text { to { background-position-x: 0; } }
 @keyframes drop-in { from { opacity: 0; translate: 0 -22px; } }
 @keyframes progress { from { transform: scaleX(0); } }
 @keyframes engine-blink { from { opacity: 1; } to { opacity: 0.35; } }
@@ -387,6 +389,8 @@ h2 + p, .eyebrow + h2 { margin-top: 1.25rem; }
   }
 
   @supports (animation-timeline: view()) {
+    /* The statement inks itself in, line by line, as it crosses the screen. */
+    .statement span { background: linear-gradient(90deg, var(--ink) 50%, #d2cad9 50%) 100% 0 / 200% 100% no-repeat; background-clip: text; color: transparent; animation: fill-text linear both; animation-timeline: --statement; animation-range: entry 70% cover 62%; }
     :is(.section-heading, .system-heading, .people-intro, .principle, .system-explorer, .engine-explorer, .engine-steps li, .engine-facts, .home-explorer, .person, .contact-card) { animation: rise linear both; animation-timeline: view(); animation-range: entry 0px entry 240px; }
   }
 }
