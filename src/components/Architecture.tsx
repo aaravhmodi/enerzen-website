@@ -27,8 +27,9 @@ function Tree({ x, y, scale = 1 }: { x: number; y: number; scale?: number }) {
 export function Architecture({ variant = "community" }: { variant?: "community" | "single" | "townhomes" | "multi" }) {
   const id = useId().replace(/:/g, "");
   return <svg className="architecture" viewBox="0 0 600 470" fill="none" role="img" aria-label={variant === "community" ? "Isometric concept of four homes around a landscaped courtyard" : `${variant} housing, isometric architectural concept`}>
-    <defs><linearGradient id={`${id}-ground`} x1="100" y1="140" x2="480" y2="430" gradientUnits="userSpaceOnUse"><stop stopColor="#eeeaf3"/><stop offset="1" stopColor="#f7f5f1"/></linearGradient><radialGradient id={`${id}-shadow`}><stop stopColor="#bdb2cb" stopOpacity=".23"/><stop offset="1" stopColor="#bdb2cb" stopOpacity="0"/></radialGradient></defs>
+    <defs><linearGradient id={`${id}-ground`} x1="100" y1="140" x2="480" y2="430" gradientUnits="userSpaceOnUse"><stop stopColor="#eeeaf3"/><stop offset="1" stopColor="#f7f5f1"/></linearGradient><radialGradient id={`${id}-shadow`}><stop stopColor="#bdb2cb" stopOpacity=".23"/><stop offset="1" stopColor="#bdb2cb" stopOpacity="0"/></radialGradient><radialGradient id={`${id}-sun`}><stop stopColor="#f2e3b3" stopOpacity=".55"/><stop offset="1" stopColor="#f2e3b3" stopOpacity="0"/></radialGradient></defs>
     <ellipse cx="306" cy="352" rx="264" ry="101" fill={`url(#${id}-shadow)`}/>
+    <g className="sun-path"><path d="M88 138C165 10 425-6 528 112" stroke="#c9bdd8" strokeWidth=".8" strokeDasharray="2 6"/><g className="sun"><circle r="30" fill={`url(#${id}-sun)`}/><circle r="6.5" fill="#f6ecc9" stroke="#d9c690" strokeWidth=".8"/></g></g>
     <g className="architecture-scene">
       <path d="m49 280 249-144 253 146-249 145Z" fill={`url(#${id}-ground)`} stroke="#cfc8d8"/>
       <path d="m49 280 253 147v9L49 289Zm253 147 249-145v9L302 436Z" fill="#e5dfec" stroke="#d0c8db"/>
