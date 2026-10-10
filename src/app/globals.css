@@ -163,6 +163,7 @@ h2 + p, .eyebrow + h2 { margin-top: 1.25rem; }
 .system-item.is-active .expand-mark { border-color: var(--ink); background: var(--ink); color: var(--paper); }
 .system-item [role="region"] { animation: fade-up 0.5s var(--ease) both; }
 .system-item [role="region"] p { max-width: 32rem; padding: 0 3rem 1.75rem 3.25rem; color: var(--ink-soft); }
+.system-figure { view-timeline: --assembly; }
 .system-figure { padding: 1.35rem 1.5rem 1.25rem; border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--surface); box-shadow: var(--shadow-soft); }
 .assembly { width: 100%; height: auto; max-height: 30rem; margin-block: 0.5rem; }
 .assembly text { font-weight: 500; letter-spacing: 0.14em; }
@@ -356,6 +357,8 @@ h2 + p, .eyebrow + h2 { margin-top: 1.25rem; }
 @keyframes sun-travel { from { offset-distance: 8%; } to { offset-distance: 92%; } }
 @keyframes dash-drift { to { stroke-dashoffset: -64; } }
 @keyframes fill-text { to { background-position-x: 0; } }
+@keyframes layer-settle { from { opacity: 0; translate: 0 var(--from, 0); } }
+@keyframes section-in { from { scale: 0.93; border-radius: 4.5rem; } }
 @keyframes drop-in { from { opacity: 0; translate: 0 -22px; } }
 @keyframes progress { from { transform: scaleX(0); } }
 @keyframes engine-blink { from { opacity: 1; } to { opacity: 0.35; } }
@@ -391,6 +394,14 @@ h2 + p, .eyebrow + h2 { margin-top: 1.25rem; }
   @supports (animation-timeline: view()) {
     /* The statement inks itself in, line by line, as it crosses the screen. */
     .statement span { background: linear-gradient(90deg, var(--ink) 50%, #d2cad9 50%) 100% 0 / 200% 100% no-repeat; background-clip: text; color: transparent; animation: fill-text linear both; animation-timeline: --statement; animation-range: entry 70% cover 62%; }
+    /* The building comes together as its figure scrolls into place. */
+    .assembly-layer { animation: layer-settle linear both; animation-timeline: --assembly; animation-range: entry 15% cover 48%; }
+    .assembly-layer:nth-child(2) { --from: 4.5rem; }
+    .assembly-layer:nth-child(3) { --from: 1rem; }
+    .assembly-layer:nth-child(4) { --from: -6rem; }
+    :is(.system-section, .engine-section) { animation: section-in linear both; animation-timeline: view(); animation-range: entry 0px entry 34rem; }
+    :is(.principle, .person):nth-child(2) { animation-range: entry 50px entry 300px; }
+    :is(.principle, .person):nth-child(3) { animation-range: entry 100px entry 360px; }
     :is(.section-heading, .system-heading, .people-intro, .principle, .system-explorer, .engine-explorer, .engine-steps li, .engine-facts, .home-explorer, .person, .contact-card) { animation: rise linear both; animation-timeline: view(); animation-range: entry 0px entry 240px; }
   }
 }
