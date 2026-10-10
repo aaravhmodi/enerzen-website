@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { Architecture } from "@/components/Architecture";
 import { Arrow, Brand, Icon } from "@/components/Primitives";
 import { CountUp, EngineExplorer, Enquiry, HomeExplorer, Navigation, PointerEffects, SystemExplorer } from "@/components/Interactions";
@@ -6,6 +7,12 @@ const principles = [
   { icon: "leaf", number: "02", title: "Leave a lighter footprint.", text: "Thoughtful material choices and an efficient building envelope, designed to use less energy over a home’s lifetime." },
   { icon: "layers", number: "03", title: "Build with more certainty.", text: "Precision-made components and a coordinated process bring clarity from the first drawing to the final assembly." },
 ] as const;
+// One small moving figure per principle: a steady indoor line, a flatter energy curve, a build that runs to plan.
+const principleArt = [
+  <svg key="comfort" className="principle-art" viewBox="0 0 240 72" aria-hidden="true"><text x="0" y="7">STEADY INSIDE, WHATEVER THE WEATHER</text><rect className="art-band" x="0" y="32" width="240" height="18" rx="9"/><path className="art-faint art-wave" d={`M-80 41${"c13-30 27-30 40 0s27 30 40 0".repeat(5)}`}/><path className="art-line art-wave" d={`M-80 41${"c13-5 27-5 40 0s27 5 40 0".repeat(5)}`}/></svg>,
+  <svg key="footprint" className="principle-art art-timed" viewBox="0 0 240 72" aria-hidden="true"><text x="0" y="7">ENERGY USED OVER A LIFETIME</text><path className="art-area" d="M0 66C80 56 160 36 240 16V46C160 58 80 64 0 66Z"/><path className="art-typical art-draw" pathLength={1} d="M0 66C80 56 160 36 240 16"/><path className="art-line art-draw is-sage" pathLength={1} d="M0 66C80 64 160 58 240 46"/><text x="240" y="7" textAnchor="end">TYPICAL</text><text className="is-sage" x="240" y="63" textAnchor="end">ENERZEN</text></svg>,
+  <svg key="certainty" className="principle-art art-timed" viewBox="0 0 240 72" aria-hidden="true"><text x="0" y="7">FROM FIRST DRAWING TO FRONT DOOR</text><path className="art-faint" d="M6 38h228"/><path className="art-line art-draw" pathLength={1} d="M6 38h228"/>{["DESIGN", "FACTORY", "SITE", "HOME"].map((label, n) => <g key={label} style={{ "--at": n / 3 } as CSSProperties}><circle className="art-stop" cx={6 + n * 76} cy="38" r="5"/><circle className="art-stop is-lit" cx={6 + n * 76} cy="38" r="5"/><text x={n === 0 ? 1 : n === 3 ? 239 : 6 + n * 76} y="62" textAnchor={n === 0 ? "start" : n === 3 ? "end" : "middle"}>{label}</text></g>)}</svg>,
+];
 const engineSteps = [
   { title: "Tell it what you’re building.", text: "A site, a size, a budget, a goal. Describe your project in plain language and the engine takes it from there." },
   { title: "It builds every version.", text: "Close to 900 combinations of wall panels, floor and roof cassettes, windows, and systems. Each one modelled for your climate, right down to the local snow load." },
@@ -53,7 +60,7 @@ export default function Home() {
 
         <section className="section container" id="approach" aria-labelledby="approach-title">
           <div className="section-heading"><div><p className="eyebrow">01 / THE ENERZEN APPROACH</p><h2 id="approach-title">A good home does more.<br /><span className="muted-title">So should the way we build it.</span></h2></div><p className="section-description">We connect building science, thoughtful design, and modern construction. Because a home’s real value is felt long after it’s built.</p></div>
-          <div className="principles">{principles.map((item) => <article className="principle" key={item.number} data-glow><div className="principle-top"><span className="icon-tile"><Icon name={item.icon} /></span><span className="small-index">{item.number}</span></div><h3>{item.title}</h3><p>{item.text}</p></article>)}</div>
+          <div className="principles">{principles.map((item, i) => <article className="principle" key={item.number} data-glow><div className="principle-top"><span className="icon-tile"><Icon name={item.icon} /></span><span className="small-index">{item.number}</span></div>{principleArt[i]}<h3>{item.title}</h3><p>{item.text}</p></article>)}</div>
           <p className="statement"><span>A home should be measured by how it feels to live in, how lightly it sits on the planet, and how confidently it gets built.</span></p>
         </section>
 
