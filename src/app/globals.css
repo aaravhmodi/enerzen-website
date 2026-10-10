@@ -116,7 +116,7 @@ h2 + p, .eyebrow + h2 { margin-top: 1.25rem; }
 .hero-note { display: flex; align-items: center; gap: 0.85rem; margin-top: clamp(2.5rem, 5vw, 4rem); color: var(--ink-faint); font-size: 0.86rem; }
 .hero-note span { flex: none; width: 2rem; height: 1px; background: var(--line-strong); }
 .hero-art { transform: perspective(70rem) rotateX(calc(var(--py, 0) * -2.5deg)) rotateY(calc(var(--px, 0) * 3.5deg)); transition: transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1); }
-.hero-art .sun-path { translate: calc(var(--px, 0) * 12px) calc(var(--py, 0) * 7px); transition: translate 0.7s cubic-bezier(0.2, 0.7, 0.2, 1); }
+.sun-path { translate: calc(var(--px, 0) * 12px) calc(var(--py, 0) * 7px); transition: translate 0.7s cubic-bezier(0.2, 0.7, 0.2, 1); }
 .hero-art { position: relative; padding: 1.35rem 1.5rem 1.25rem; border: 1px solid var(--line); border-radius: var(--radius-lg); background: linear-gradient(165deg, rgb(255 255 255 / 0.92) 0%, rgb(244 240 248 / 0.92) 100%); box-shadow: var(--shadow-soft); }
 .art-topline { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.25rem 1rem; color: var(--ink-faint); font-size: 0.66rem; font-weight: 500; letter-spacing: 0.15em; }
 .architecture { width: 100%; height: auto; }
@@ -179,7 +179,8 @@ h2 + p, .eyebrow + h2 { margin-top: 1.25rem; }
 .system-section { margin-inline: clamp(0.5rem, 1.5vw, 1.5rem); padding-block: clamp(4.5rem, 9vw, 8rem); border-radius: var(--radius-xl); background: var(--tint); }
 .system-explorer { display: grid; grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr); align-items: start; gap: clamp(2rem, 5vw, 4.5rem); }
 .system-list { border-top: 1px solid var(--line-strong); }
-.system-item { border-bottom: 1px solid var(--line-strong); }
+.system-item { position: relative; border-bottom: 1px solid var(--line-strong); }
+.system-progress { position: absolute; right: 0; bottom: -1px; left: 0; display: none; height: 1px; background: var(--accent-deep); transform-origin: 0 50%; }
 .system-item button { display: grid; grid-template-columns: 2.25rem 1fr auto; align-items: center; gap: 1rem; width: 100%; padding-block: 1.5rem; color: var(--ink-soft); font-size: clamp(1.15rem, 1.7vw, 1.4rem); font-weight: 500; letter-spacing: -0.022em; line-height: 1.2; text-align: left; transition: color 0.3s var(--ease); }
 .system-item button:hover, .system-item.is-active button { color: var(--ink); }
 .system-number { color: var(--accent-text); font-size: 0.75rem; letter-spacing: 0.14em; }
@@ -192,7 +193,8 @@ h2 + p, .eyebrow + h2 { margin-top: 1.25rem; }
 .assembly { width: 100%; height: auto; max-height: 30rem; margin-block: 0.5rem; }
 .assembly text { font-weight: 500; letter-spacing: 0.14em; }
 .assembly-layer { opacity: 0.4; transition: opacity 0.6s var(--ease), translate 0.6s var(--ease); }
-.assembly-layer.layer-active { opacity: 1; translate: 0 -6px; }
+.assembly-layer.layer-active { opacity: 1; translate: 0 -10px; }
+:is(.system-figure .assembly, .home-figure .architecture) { transform: perspective(60rem) rotateX(calc(var(--py, 0) * -3deg)) rotateY(calc(var(--px, 0) * 4deg)); transition: transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1); }
 .system-figure figcaption { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.25rem 1rem; padding-top: 1rem; border-top: 1px solid var(--line); color: var(--ink-faint); font-size: 0.78rem; }
 .system-caption-label { color: var(--accent-text); font-size: 0.7rem; font-weight: 500; letter-spacing: 0.15em; }
 
@@ -434,6 +436,8 @@ h2 + p, .eyebrow + h2 { margin-top: 1.25rem; }
   .principle:nth-child(3) .art-timed { animation-delay: -3s; }
   .art-wave { animation: wave 5s linear infinite; }
   .art-wave.art-line { animation-duration: 9s; }
+  .system-progress { display: block; animation: progress 8s linear both; }
+  .system-explorer:is(:hover, :focus-within) .system-progress { animation-play-state: paused; }
   .shadow { animation: shadow-shift 18s ease-in-out infinite alternate; }
   .art-cycle > span { animation: caption 16s var(--ease) infinite; }
   .hotspots > g { animation: spotlight 16s var(--ease) infinite; }

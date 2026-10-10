@@ -24,7 +24,18 @@ const systems = [
 
 export function SystemExplorer() {
   const [active, setActive] = useState(0);
-  return <div className="system-explorer"><div className="system-list">{systems.map((item, i) => <div className={`system-item ${active === i ? "is-active" : ""}`} key={item.title}><h3><button id={`system-button-${i}`} aria-expanded={active === i} aria-controls={`system-panel-${i}`} onClick={() => setActive(i)}><span className="system-number">0{i + 1}</span><span>{item.title}</span><span className="expand-mark" aria-hidden="true">{active === i ? "−" : "+"}</span></button></h3><div id={`system-panel-${i}`} role="region" aria-labelledby={`system-button-${i}`} hidden={active !== i}><p>{item.text}</p></div></div>)}</div><figure className="system-figure" data-glow><div className="art-topline"><span>INTELLIGENCE IN EVERY LAYER</span><span>02 — THE SYSTEM</span></div><Assembly active={active}/><figcaption><span className="system-caption-label">{systems[active].label}</span><span>Illustrative assembly · not a technical specification</span></figcaption></figure></div>;
+  // Steps through the three ideas on its own, while on screen, until someone picks one.
+  const [auto, setAuto] = useState(true);
+  const [visible, setVisible] = useState(false);
+  const root = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const node = root.current;
+    if (!node) return;
+    const observer = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting), { threshold: 0.4 });
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+  return <div className="system-explorer" ref={root}><div className="system-list">{systems.map((item, i) => <div className={`system-item ${active === i ? "is-active" : ""}`} key={item.title}><h3><button id={`system-button-${i}`} aria-expanded={active === i} aria-controls={`system-panel-${i}`} onClick={() => { setActive(i); setAuto(false); }}><span className="system-number">0{i + 1}</span><span>{item.title}</span><span className="expand-mark" aria-hidden="true">{active === i ? "−" : "+"}</span></button></h3><div id={`system-panel-${i}`} role="region" aria-labelledby={`system-button-${i}`} hidden={active !== i}><p>{item.text}</p></div>{auto && visible && active === i && <span className="system-progress" onAnimationEnd={() => setActive((i + 1) % systems.length)}/>}</div>)}</div><figure className="system-figure" data-glow data-tilt><div className="art-topline"><span>INTELLIGENCE IN EVERY LAYER</span><span>02 — THE SYSTEM</span></div><Assembly active={active}/><figcaption><span className="system-caption-label">{systems[active].label}</span><span>Illustrative assembly · not a technical specification</span></figcaption></figure></div>;
 }
 
 const priorities = [
@@ -163,7 +174,7 @@ export function HomeExplorer() {
     else return;
     event.preventDefault(); setActive(next); tabs.current[next]?.focus();
   }
-  return <div className="home-explorer"><div className="home-tabs" role="tablist" aria-label="Explore housing types" style={{ "--active": active } as CSSProperties}>{homes.map((item, i) => <button ref={el => { tabs.current[i] = el; }} id={`home-tab-${i}`} key={item.name} role="tab" aria-selected={active === i} aria-controls={`home-panel-${i}`} tabIndex={active === i ? 0 : -1} onClick={() => setActive(i)} onKeyDown={event => onKey(event, i)}><span className="tab-number">0{i + 1}</span>{item.name}<Arrow direction="diagonal"/></button>)}</div><div className="home-panel" id={`home-panel-${active}`} role="tabpanel" aria-labelledby={`home-tab-${active}`} tabIndex={0}><div className="home-details" key={home.name}><p className="eyebrow">{home.eyebrow}</p><h3>{home.title}</h3><p>{home.text}</p><ul>{home.uses.map(use => <li key={use}><span aria-hidden="true">↗</span>{use}</li>)}</ul><a className="text-link" href="#contact">Let’s explore your project <Arrow /></a></div><figure className="home-figure" key={home.variant}><Architecture variant={home.variant}/><figcaption>Architectural concept · {home.name} housing</figcaption></figure><div className="home-panel-footer"><span><i />{home.footer}</span><span>THE ENERZEN PHILOSOPHY, AT EVERY SCALE</span></div></div></div>;
+  return <div className="home-explorer"><div className="home-tabs" role="tablist" aria-label="Explore housing types" style={{ "--active": active } as CSSProperties}>{homes.map((item, i) => <button ref={el => { tabs.current[i] = el; }} id={`home-tab-${i}`} key={item.name} role="tab" aria-selected={active === i} aria-controls={`home-panel-${i}`} tabIndex={active === i ? 0 : -1} onClick={() => setActive(i)} onKeyDown={event => onKey(event, i)}><span className="tab-number">0{i + 1}</span>{item.name}<Arrow direction="diagonal"/></button>)}</div><div className="home-panel" id={`home-panel-${active}`} role="tabpanel" aria-labelledby={`home-tab-${active}`} tabIndex={0}><div className="home-details" key={home.name}><p className="eyebrow">{home.eyebrow}</p><h3>{home.title}</h3><p>{home.text}</p><ul>{home.uses.map(use => <li key={use}><span aria-hidden="true">↗</span>{use}</li>)}</ul><a className="text-link" href="#contact">Let’s explore your project <Arrow /></a></div><figure className="home-figure" key={home.variant} data-tilt><Architecture variant={home.variant}/><figcaption>Architectural concept · {home.name} housing</figcaption></figure><div className="home-panel-footer"><span><i />{home.footer}</span><span>THE ENERZEN PHILOSOPHY, AT EVERY SCALE</span></div></div></div>;
 }
 
 export function Enquiry({ email }: { email: string }) {
