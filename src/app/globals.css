@@ -322,6 +322,7 @@ h2 + p, .eyebrow + h2 { margin-top: 1.25rem; }
 /* People */
 .people-section { padding-block: 0 var(--section-space); }
 .people-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; }
+.person { position: relative; view-timeline: --person; }
 .person { padding: 1.75rem; border: 1px solid var(--line); border-radius: var(--radius); background: rgb(255 255 255 / 0.7); transition: border-color 0.4s var(--ease), box-shadow 0.4s var(--ease), background-color 0.4s var(--ease); }
 .person:hover { border-color: var(--line-strong); background: #fff; box-shadow: var(--shadow-soft); }
 .person-monogram { transition: scale 0.5s cubic-bezier(0.3, 1.4, 0.5, 1); }
@@ -330,6 +331,12 @@ h2 + p, .eyebrow + h2 { margin-top: 1.25rem; }
 .principle:hover .icon-tile svg { rotate: -8deg; scale: 1.12; }
 .person-monogram { position: relative; display: grid; place-items: center; width: 4rem; height: 4rem; margin-bottom: 2.5rem; border-radius: 50%; background: linear-gradient(145deg, #efeaf5, #ddd3e8); color: var(--accent-deep); font-size: 1.05rem; font-weight: 500; letter-spacing: 0.04em; }
 .person-monogram span { position: absolute; right: 0.1rem; bottom: 0.1rem; width: 0.8rem; height: 0.8rem; border: 2px solid var(--paper); border-radius: 50%; background: var(--sage); }
+/* An arc around each monogram, sized to years of experience out of thirty. */
+.person-ring { position: absolute; inset: -0.4rem; width: calc(100% + 0.8rem); height: calc(100% + 0.8rem); fill: none; rotate: -90deg; }
+.person-ring circle { stroke: var(--line); }
+.person-ring circle:last-child { stroke: var(--sage); stroke-width: 1.6; stroke-linecap: round; stroke-dasharray: var(--arc) 1; }
+.person-years { position: absolute; top: 1.75rem; right: 1.75rem; display: flex; align-items: baseline; gap: 0.4rem; font-size: 1.6rem; font-weight: 500; font-variant-numeric: tabular-nums; letter-spacing: -0.03em; line-height: 1; }
+.person-years small { color: var(--ink-faint); font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; }
 .person-role { color: var(--accent-text); font-size: 0.7rem; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; }
 .person h3 { margin-top: 0.5rem; font-size: 1.5rem; line-height: 1.15; letter-spacing: -0.028em; }
 .credentials { margin-top: 0.5rem; padding-bottom: 1.1rem; border-bottom: 1px solid var(--line); color: var(--ink-faint); font-size: 0.84rem; }
@@ -403,6 +410,7 @@ h2 + p, .eyebrow + h2 { margin-top: 1.25rem; }
 @keyframes caption { 0%, 25%, 100% { opacity: 0; translate: 0 0.45em; } 3%, 22% { opacity: 1; translate: 0; } }
 @keyframes art-clock { from { --t: 0; } to { --t: 1; } }
 @keyframes wave { to { transform: translateX(80px); } }
+@keyframes arc-draw { from { stroke-dashoffset: var(--arc); } }
 @keyframes fill-text { to { background-position-x: 0; } }
 @keyframes layer-settle { from { opacity: 0; translate: 0 var(--from, 0); } }
 @keyframes section-in { from { scale: 0.93; border-radius: 4.5rem; } }
@@ -470,6 +478,8 @@ h2 + p, .eyebrow + h2 { margin-top: 1.25rem; }
   @supports (animation-timeline: view()) {
     /* The statement inks itself in, line by line, as it crosses the screen. */
     .statement span { background: linear-gradient(90deg, var(--ink) 50%, #d2cad9 50%) 100% 0 / 200% 100% no-repeat; background-clip: text; color: transparent; animation: fill-text linear both; animation-timeline: --statement; animation-range: entry 70% cover 62%; }
+    .person-ring circle:last-child { animation: arc-draw linear both; animation-timeline: --person; animation-range: entry 35% cover 42%; }
+    :is(.section-heading, .system-heading, .people-intro) .muted-title { display: inline-block; animation: line-in linear both; animation-timeline: view(); animation-range: entry 0% cover 32%; }
     /* The wireframe home draws itself, like a plan being sketched. */
     .contact-art path { stroke-dasharray: 1; animation: draw linear both; animation-timeline: --blueprint; animation-range: entry 40% cover 36%; }
     .engine-steps li::before { content: ""; position: absolute; top: -1px; right: 0; left: 0; height: 1px; background: #b9cfa9; transform-origin: 0 50%; animation: progress linear both; animation-timeline: --step; animation-range: entry 60% cover 42%; }
