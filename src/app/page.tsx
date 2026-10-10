@@ -42,7 +42,7 @@ export default function Home() {
           <figure className="hero-art">
             <div className="art-topline"><span>THE BIGGER PICTURE</span><span>01 — A PLACE TO BELONG</span></div>
             <Architecture variant="community" />
-            <figcaption className="art-caption"><span><i /> More possibility. Less impact.</span><span>Architectural concept</span></figcaption>
+            <figcaption className="art-caption"><span className="art-cycle"><i /><span>More possibility. Less impact.</span><span>Oriented for the sun.</span><span>Shared green space.</span><span>An airtight, insulated envelope.</span></span><span>Architectural concept</span></figcaption>
           </figure>
         </section>
 

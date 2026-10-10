@@ -3,7 +3,7 @@ import { useId } from "react";
 function Building({ x, y, scale = 1, floors = 2 }: { x: number; y: number; scale?: number; floors?: number }) {
   const h = floors * 32;
   return <g transform={`translate(${x} ${y}) scale(${scale})`} stroke="#aca3b8" strokeWidth=".8" strokeLinejoin="round">
-    <path d="m5 3 63 36 63-36-63-36Z" fill="#c8c0d1" opacity=".18" stroke="none" transform="translate(8 7)" />
+    <path className="shadow" d="m5 3 63 36 63-36-63-36Z" fill="#c8c0d1" opacity=".18" stroke="none" transform="translate(8 7)" />
     <path d={`M0 0v${-h}l64 37V37Z`} fill="#e2dce9" />
     <path d={`M64 37v${-h}l60-35v${h}Z`} fill="#f7f5fa" />
     <path d={`M0 ${-h}l60-35 64 37-60 35Z`} fill="#fbfafc" />
@@ -21,7 +21,7 @@ function Building({ x, y, scale = 1, floors = 2 }: { x: number; y: number; scale
 }
 
 function Tree({ x, y, scale = 1 }: { x: number; y: number; scale?: number }) {
-  return <g transform={`translate(${x} ${y}) scale(${scale})`}><ellipse cx="5" cy="1" rx="17" ry="7" fill="#aeb6a7" opacity=".15"/><path d="M0 0v-37" stroke="#99a98d" strokeWidth="1.8"/><ellipse cx="0" cy="-29" rx="12" ry="20" fill="#dce3d5" stroke="#bac8ae" strokeWidth=".8"/><path d="M0-10v-32m0 16 5-7m-5 11-5-6" fill="none" stroke="#bdcab2" strokeWidth=".8"/></g>;
+  return <g transform={`translate(${x} ${y}) scale(${scale})`}><ellipse className="shadow" cx="5" cy="1" rx="17" ry="7" fill="#aeb6a7" opacity=".15"/><path d="M0 0v-37" stroke="#99a98d" strokeWidth="1.8"/><ellipse cx="0" cy="-29" rx="12" ry="20" fill="#dce3d5" stroke="#bac8ae" strokeWidth=".8"/><path d="M0-10v-32m0 16 5-7m-5 11-5-6" fill="none" stroke="#bdcab2" strokeWidth=".8"/></g>;
 }
 
 export function Architecture({ variant = "community" }: { variant?: "community" | "single" | "townhomes" | "multi" }) {
@@ -46,6 +46,7 @@ export function Architecture({ variant = "community" }: { variant?: "community" 
         <Building x={111} y={270}/><Tree x={241} y={304} scale={.7}/>
         <Building x={268} y={352}/>
         <Tree x={100} y={316} scale={.9}/><Tree x={389} y={367} scale={.9}/><Tree x={235} y={387} scale={.7}/>
+        <g className="hotspots">{[[256, 146], [287, 262], [300, 340]].map(([x, y]) => <g key={y}><circle cx={x} cy={y} r="11"/><circle cx={x} cy={y} r="3.5"/></g>)}</g>
       </> : variant === "single" ? <>
         <path d="m94 286 205-117 204 118-202 117Z" fill="#e0e6d9" stroke="#c6cfbe"/>
         <path d="m188 340 80-46 88 51-79 46Z" fill="#f8f6f1" stroke="#d6cfde"/>
